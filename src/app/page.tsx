@@ -1,7 +1,11 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 
+import TruthTable from "@/engine/truthTable";
+
 export default function Home() {
+  new TruthTable(3, 2).printTruthTable();
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
