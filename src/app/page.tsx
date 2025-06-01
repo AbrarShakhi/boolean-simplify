@@ -2,9 +2,9 @@ import Image from "next/image";
 import styles from "./page.module.css";
 
 import TruthTable from "@/engine/truthTable";
+import KarnaughMap from "@/engine/karnaughMap"
 
 export default function Home() {
-  new TruthTable(3, 2).printTruthTable();
 
   return (
     <div className={styles.page}>
