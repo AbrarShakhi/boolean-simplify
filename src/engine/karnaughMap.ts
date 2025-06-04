@@ -1,8 +1,19 @@
 import TruthTable from "@/engine/truthTable";
+import { Queue } from "js-sdsl";
 
 type GrayCode = {
   binary: string;
   decimal: number;
+};
+
+type Cell = {
+  row: number;
+  col: number;
+};
+
+type Quad = {
+  cell: Cell;
+  gray_code: GrayCode;
 };
 
 export default class KarnaughMap {
@@ -133,7 +144,24 @@ export default class KarnaughMap {
     }
   }
 
-  public solve(): string {
-    return "";
+  public FindQuads(): Quad[] {
+    const quads: Quad[] = [];
+
+    const part_of_quad: number[][] = Array.from(
+      { length: this.row_gray_code.length },
+      () => Array(this.col_gray_code.length).fill(-1)
+    );
+
+    const queue = new Queue<Cell>();
+
+    for (let i = 0; i < this.kmap_table.length; i++) {
+      for (let j = 0; j < this.kmap_table[i].length; j++) {
+        if (this.kmap_table[i][j] === 1 && part_of_quad[i][j] === -1) {
+          const haed_cell = { row: i, col: j };
+          queue.push(haed_cell);
+        }
+      }
+    }
+    return quads;
   }
 }

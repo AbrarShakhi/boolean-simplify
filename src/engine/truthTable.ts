@@ -138,8 +138,8 @@ export default class TruthTable {
    * @param value - The value to set (0, 1, or -1).
    */
   public setOutput(
-    row_index: number,
     output_pin_index: number,
+    row_index: number,
     value: number
   ): void {
     this.outputBoundCheck(row_index, output_pin_index);
