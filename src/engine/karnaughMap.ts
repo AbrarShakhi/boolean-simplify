@@ -11,11 +11,6 @@ type Cell = {
   col: number;
 };
 
-type Quad = {
-  cell: Cell;
-  gray_code: GrayCode;
-};
-
 export default class KarnaughMap {
   private truth_table: TruthTable;
   private num_of_km_rows: number;
@@ -144,24 +139,50 @@ export default class KarnaughMap {
     }
   }
 
-  public FindQuads(): Quad[] {
-    const quads: Quad[] = [];
+  // kmap solver
+  public FindQuads(): Cell[][] {
+    const quads: Cell[][] = [];
 
     const part_of_quad: number[][] = Array.from(
       { length: this.row_gray_code.length },
       () => Array(this.col_gray_code.length).fill(-1)
     );
 
-    const queue = new Queue<Cell>();
-
     for (let i = 0; i < this.kmap_table.length; i++) {
       for (let j = 0; j < this.kmap_table[i].length; j++) {
         if (this.kmap_table[i][j] === 1 && part_of_quad[i][j] === -1) {
-          const haed_cell = { row: i, col: j };
-          queue.push(haed_cell);
+          const q = new Queue<Cell>();
+
+          const haed_cell: Cell = { row: i, col: j };
+          q.push(haed_cell);
+
+          const quad: Cell[] = [haed_cell];
+
+          while (!q.empty()) {
+            const selected = q.front();
+            q.pop();
+          }
+          for (let i = 0; i < quad.length; i++) {
+            part_of_quad[quad[i].row][quad[i].col] = quads.length;
+          }
+          quads.push(quad);
         }
       }
     }
     return quads;
+  }
+
+  private otherBoundary(i: number, j: number): [number, number] {
+    if (i === -1) {
+      i = this.row_gray_code.length - 1;
+    } else if (i === this.row_gray_code.length) {
+      i = 0;
+    } else if (j === -1) {
+      j = this.col_gray_code.length - 1;
+    } else if (j === this.col_gray_code.length) {
+      j = 0;
+    }
+
+    return [i, j];
   }
 }
