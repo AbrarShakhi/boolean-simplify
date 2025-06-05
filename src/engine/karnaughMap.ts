@@ -147,20 +147,46 @@ export default class KarnaughMap {
       { length: this.row_gray_code.length },
       () => Array(this.col_gray_code.length).fill(-1)
     );
+    const directions = {
+      left: [-1, 0],
+      right: [1, 0],
+      up: [0, 1],
+      down: [0, -1],
+    };
 
     for (let i = 0; i < this.kmap_table.length; i++) {
       for (let j = 0; j < this.kmap_table[i].length; j++) {
         if (this.kmap_table[i][j] === 1 && part_of_quad[i][j] === -1) {
           const q = new Queue<Cell>();
+          let pow = 0;
 
-          const haed_cell: Cell = { row: i, col: j };
-          q.push(haed_cell);
+          const head_cell: Cell = { row: i, col: j };
+          q.push(head_cell);
 
-          const quad: Cell[] = [haed_cell];
+          const quad: Cell[] = [head_cell];
 
           while (!q.empty()) {
-            const selected = q.front();
+            const current = q.front();
+            if (!current) continue;
             q.pop();
+
+            for (const [vi, vj] of Object.values(directions)) {
+              const [ni, nj] = this.otherBoundary(
+                current.row + vi,
+                current.col + vj
+              );
+
+              if (this.kmap_table[ni][nj] === 0) {
+                continue;
+              }
+              for (const cell of quad) {
+                if (cell.row === ni && cell.col === nj) {
+                  continue;
+                }
+              }
+
+              // we encunter 1 or -1 need to process should we include or not.
+            }
           }
           for (let i = 0; i < quad.length; i++) {
             part_of_quad[quad[i].row][quad[i].col] = quads.length;
