@@ -1,5 +1,5 @@
 import TruthTable from "@/engine/truthTable";
-import { Queue } from "js-sdsl";
+import {} from "js-sdsl";
 
 type GrayCode = {
   binary: string;
@@ -139,7 +139,6 @@ export default class KarnaughMap {
     }
   }
 
-  // kmap solver
   public FindQuads(): Cell[][] {
     const quads: Cell[][] = [];
 
@@ -147,47 +146,76 @@ export default class KarnaughMap {
       { length: this.row_gray_code.length },
       () => Array(this.col_gray_code.length).fill(-1)
     );
-    const directions = {
-      left: [-1, 0],
-      right: [1, 0],
-      up: [0, 1],
-      down: [0, -1],
-    };
 
     for (let i = 0; i < this.kmap_table.length; i++) {
       for (let j = 0; j < this.kmap_table[i].length; j++) {
-        if (this.kmap_table[i][j] === 1 && part_of_quad[i][j] === -1) {
-          const q = new Queue<Cell>();
-          let pow = 0;
+        const current = this.kmap_table[i][j];
+        if (current === 1 && part_of_quad[i][j] === -1) {
+          const quad: Cell[] = [];
+          {
+            const visited: boolean[][] = Array.from(
+              { length: this.row_gray_code.length },
+              () => Array(this.col_gray_code.length).fill(false)
+            );
 
-          const head_cell: Cell = { row: i, col: j };
-          q.push(head_cell);
+            let pow = 1;
 
-          const quad: Cell[] = [head_cell];
+            let possible_cells: Cell[] = [{ row: i, col: j }];
 
-          while (!q.empty()) {
-            const current = q.front();
-            if (!current) continue;
-            q.pop();
+            let [ti, tj] = this.otherBoundary(i + 1, j);
+            while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+              visited[ti][tj] = true;
 
-            for (const [vi, vj] of Object.values(directions)) {
-              const [ni, nj] = this.otherBoundary(
-                current.row + vi,
-                current.col + vj
-              );
-
-              if (this.kmap_table[ni][nj] === 0) {
-                continue;
-              }
-              for (const cell of quad) {
-                if (cell.row === ni && cell.col === nj) {
-                  continue;
+              if (quad.length + possible_cells.length + 1 !== 2 ** pow) {
+                possible_cells.push({ row: ti, col: tj });
+              } else {
+                pow++;
+                for (const c of possible_cells) {
+                  quad.push(c);
                 }
+                possible_cells = [];
               }
-
-              // we encunter 1 or -1 need to process should we include or not.
+              [ti, tj] = this.otherBoundary(ti + 1, tj);
             }
+
+            [ti, tj] = this.otherBoundary(i - 1, j);
+            while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+              visited[ti][tj] = true;
+
+              if (quad.length + possible_cells.length + 1 !== 2 ** pow) {
+                possible_cells.push({ row: ti, col: tj });
+              } else {
+                pow++;
+                for (const c of possible_cells) {
+                  quad.push(c);
+                }
+                possible_cells = [];
+              }
+              [ti, tj] = this.otherBoundary(ti - 1, tj);
+            }
+
+            // down
+            // possible_cells = [];
+            // const vertical_quad: Cell[] = [];
+            // [ti, tj] = this.otherBoundary(i, j - 1);
+            // while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+            //   visited[ti][tj] = true;
+
+            //   if (quad.length + possible_cells.length + 1 !== 2 ** pow) {
+            //     possible_cells.push({ row: ti, col: tj });
+            //   } else {
+            //     pow++;
+            //     for (const c of possible_cells) {
+            //       quad.push(c);
+            //     }
+            //     possible_cells = [];
+            //   }
+            //   [ti, tj] = this.otherBoundary(ti - 1, tj);
+            // }
+
+            // up
           }
+
           for (let i = 0; i < quad.length; i++) {
             part_of_quad[quad[i].row][quad[i].col] = quads.length;
           }
