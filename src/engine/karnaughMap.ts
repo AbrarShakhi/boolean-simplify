@@ -149,78 +149,103 @@ export default class KarnaughMap {
 
     for (let i = 0; i < this.kmap_table.length; i++) {
       for (let j = 0; j < this.kmap_table[i].length; j++) {
-        const current = this.kmap_table[i][j];
-        if (current === 1 && part_of_quad[i][j] === -1) {
-          const quad: Cell[] = [];
-          {
-            const visited: boolean[][] = Array.from(
-              { length: this.row_gray_code.length },
-              () => Array(this.col_gray_code.length).fill(false)
-            );
-
-            let pow = 1;
-
-            let possible_cells: Cell[] = [{ row: i, col: j }];
-
-            let [ti, tj] = this.otherBoundary(i + 1, j);
-            while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
-              visited[ti][tj] = true;
-
-              if (quad.length + possible_cells.length + 1 !== 2 ** pow) {
-                possible_cells.push({ row: ti, col: tj });
-              } else {
-                pow++;
-                for (const c of possible_cells) {
-                  quad.push(c);
-                }
-                possible_cells = [];
-              }
-              [ti, tj] = this.otherBoundary(ti + 1, tj);
-            }
-
-            [ti, tj] = this.otherBoundary(i - 1, j);
-            while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
-              visited[ti][tj] = true;
-
-              if (quad.length + possible_cells.length + 1 !== 2 ** pow) {
-                possible_cells.push({ row: ti, col: tj });
-              } else {
-                pow++;
-                for (const c of possible_cells) {
-                  quad.push(c);
-                }
-                possible_cells = [];
-              }
-              [ti, tj] = this.otherBoundary(ti - 1, tj);
-            }
-
-            // down
-            // possible_cells = [];
-            // const vertical_quad: Cell[] = [];
-            // [ti, tj] = this.otherBoundary(i, j - 1);
-            // while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
-            //   visited[ti][tj] = true;
-
-            //   if (quad.length + possible_cells.length + 1 !== 2 ** pow) {
-            //     possible_cells.push({ row: ti, col: tj });
-            //   } else {
-            //     pow++;
-            //     for (const c of possible_cells) {
-            //       quad.push(c);
-            //     }
-            //     possible_cells = [];
-            //   }
-            //   [ti, tj] = this.otherBoundary(ti - 1, tj);
-            // }
-
-            // up
-          }
-
-          for (let i = 0; i < quad.length; i++) {
-            part_of_quad[quad[i].row][quad[i].col] = quads.length;
-          }
-          quads.push(quad);
+        if (this.kmap_table[i][j] !== 1 || part_of_quad[i][j] !== -1) {
+          continue;
         }
+        const quad: Cell[] = [];
+        const visited: boolean[][] = Array.from(
+          { length: this.row_gray_code.length },
+          () => Array(this.col_gray_code.length).fill(false)
+        );
+
+        // RIGHT
+        let pow = 1;
+        let [ax, ay] = [i, j];
+        let [x, xx] = [1, 1];
+        let [ti, tj] = this.otherBoundary(ax + 1, ay);
+        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          visited[ti][tj] = true;
+          x++;
+
+          if (2 ** pow === x) {
+            pow++;
+            xx = x;
+          }
+          [ti, tj] = this.otherBoundary(ti + 1, tj);
+        }
+        x = xx;
+
+        // LEFT
+        [ti, tj] = this.otherBoundary(ax - 1, ay);
+        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          visited[ti][tj] = true;
+          x++;
+
+          if (2 ** pow === x) {
+            pow++;
+            ax = ti;
+            xx = x;
+          }
+          [ti, tj] = this.otherBoundary(ti - 1, tj);
+        }
+        x = xx;
+
+        const rlen = xx;
+
+        // DOWN
+        pow = 1;
+        x = xx = 1;
+        [ti, tj] = this.otherBoundary(ax, ay - 1);
+        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          for (let index = 1; index < rlen; index++) {
+            const [vi, vj] = this.otherBoundary(ti + index, tj);
+            if (this.kmap_table[vi][vj] === 0) {
+              break;
+            }
+          }
+
+          visited[ti][tj] = true;
+          x++;
+
+          if (2 ** pow === x) {
+            pow++;
+            xx = x;
+          }
+          [ti, tj] = this.otherBoundary(ti, tj - 1);
+        }
+        x = xx;
+
+        // UP
+        [ti, tj] = this.otherBoundary(ax, ay + 1);
+        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          for (let index = 1; index < rlen; index++) {
+            const [vi, vj] = this.otherBoundary(ti + index, tj);
+            if (this.kmap_table[vi][vj] === 0) {
+              break;
+            }
+          }
+
+          visited[ti][tj] = true;
+          x++;
+
+          if (2 ** pow === x) {
+            pow++;
+            ay = tj;
+            xx = x;
+          }
+          [ti, tj] = this.otherBoundary(ti, tj + 1);
+        }
+        x = xx;
+
+        // PUSH ALLS QUAD
+        for (let index = 0; index < xx; index++) {
+          for (let jndex = 0; jndex < rlen; jndex++) {
+            [ti, tj] = this.otherBoundary(ax + index, ay + jndex);
+            quad.push({ row: ti, col: tj });
+            part_of_quad[ti][tj] = quads.length;
+          }
+        }
+        quads.push(quad);
       }
     }
     return quads;
