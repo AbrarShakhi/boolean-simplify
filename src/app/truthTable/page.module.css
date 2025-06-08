@@ -1,21 +1,157 @@
 .container {
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 600;
   text-align: center;
   margin-bottom: 2rem;
   color: var(--text-color);
 }
 
-.tableContainer {
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 2rem;
+.themeToggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.themeToggle:hover {
+  background-color: var(--hover-color);
+}
+
+.penContainer {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
   margin-bottom: 2rem;
+}
+
+.penButton {
+  width: auto !important;
+  padding: 0.5rem 2rem !important;
+  margin-top: 0 !important;
+  font-size: 1.2rem !important;
+  min-width: 80px;
+}
+
+.selectedPen {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border-color: var(--primary-color) !important;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.truthTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--bg-color);
+}
+
+.truthTable th,
+.truthTable td {
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.truthTable th {
+  background-color: var(--bg-secondary);
+  font-weight: 600;
+}
+
+.truthTable tr:nth-child(even) {
+  background-color: var(--bg-secondary);
+}
+
+.truthTable tr:hover {
+  background-color: var(--hover-color);
+}
+
+.outputButton {
+  width: 40px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 40px !important;
+  font-size: 1.1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Light theme (default) */
+:root {
+  --bg-color: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text-color: #333333;
+  --border-color: #e0e0e0;
+  --hover-color: #f0f0f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --primary-color: #2196f3;
+  --primary-color-alpha: rgba(33, 150, 243, 0.2);
+}
+
+/* Dark theme */
+:root[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --text-color: #e0e0e0;
+  --border-color: #404040;
+  --hover-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --primary-color: #64b5f6;
+  --primary-color-alpha: rgba(100, 181, 246, 0.2);
+}
+
+/* Light theme output styles */
+.outputOne {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.outputZero {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.outputX {
+  background-color: #e0e0e0 !important;
+  color: #666666 !important;
+}
+
+/* Dark theme output styles */
+:root[data-theme="dark"] .outputOne {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+:root[data-theme="dark"] .outputZero {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid #404040 !important;
+}
+
+:root[data-theme="dark"] .outputX {
+  background-color: #404040 !important;
+  color: #a0a0a0 !important;
 }

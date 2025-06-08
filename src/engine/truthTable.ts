@@ -13,8 +13,8 @@ export default class TruthTable {
 
   /**
    * Constructs a TruthTable instance with the specified number of inputs and outputs.
-   * @param num_of_input - The number of input pins (must be greater than 0).
-   * @param num_of_output - The number of output pins (must be greater than 0).
+   * @param num_of_input - The number of input pins (must be greater than 0 and less than 10).
+   * @param num_of_output - The number of output pins (must be greater than 0 and less than 10).
    */
   constructor(num_of_input: number, num_of_output: number) {
     if (num_of_input < 1) {
@@ -22,6 +22,12 @@ export default class TruthTable {
     }
     if (num_of_output < 1) {
       throw new Error("number of output must be greater than zero");
+    }
+    if (num_of_input > 9) {
+      throw new Error("number of input must be less than ten");
+    }
+    if (num_of_output > 9) {
+      throw new Error("number of output must be less than ten");
     }
     this.num_of_input = num_of_input;
     this.num_of_output = num_of_output;
