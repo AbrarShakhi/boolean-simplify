@@ -27,8 +27,8 @@ export default class KarnaughMap {
       this.num_of_km_rows = this.num_of_km_cols =
         this.truth_table.getNumOfInput() / 2;
     } else {
-      this.num_of_km_rows = Math.ceil(this.truth_table.getNumOfInput() / 2);
-      this.num_of_km_cols = Math.floor(this.truth_table.getNumOfInput() / 2);
+      this.num_of_km_rows = Math.floor(this.truth_table.getNumOfInput() / 2);
+      this.num_of_km_cols = Math.ceil(this.truth_table.getNumOfInput() / 2);
     }
 
     // TODO: If input pins is 1 it fails to generate.
@@ -160,10 +160,49 @@ export default class KarnaughMap {
 
         // RIGHT
         let pow = 1;
-        let [ax, ay] = [i, j];
+        let [ai, aj] = [i, j];
         let [x, xx] = [1, 1];
-        let [ti, tj] = this.otherBoundary(ax + 1, ay);
+        let [ti, tj] = this.otherBoundary(ai, aj + 1);
         while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          visited[ti][tj] = true;
+          x++;
+
+          if (2 ** pow === x) {
+            pow++;
+            xx = x;
+          }
+          [ti, tj] = this.otherBoundary(ti, tj + 1);
+        }
+        x = xx;
+
+        // LEFT
+        [ti, tj] = this.otherBoundary(ai, aj - 1);
+        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          visited[ti][tj] = true;
+          x++;
+
+          if (2 ** pow === x) {
+            pow++;
+            aj = tj;
+            xx = x;
+          }
+          [ti, tj] = this.otherBoundary(ti, tj - 1);
+        }
+        x = xx;
+        const rlen = xx;
+
+        // DOWN
+        pow = 1;
+        x = xx = 1;
+        [ti, tj] = this.otherBoundary(ai + 1, aj);
+        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          for (let index = 1; index < rlen; index++) {
+            const [vi, vj] = this.otherBoundary(ti, tj + index);
+            if (this.kmap_table[vi][vj] === 0) {
+              break;
+            }
+          }
+
           visited[ti][tj] = true;
           x++;
 
@@ -175,72 +214,32 @@ export default class KarnaughMap {
         }
         x = xx;
 
-        // LEFT
-        [ti, tj] = this.otherBoundary(ax - 1, ay);
+        // UP
+        [ti, tj] = this.otherBoundary(ai - 1, aj);
         while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
+          for (let index = 1; index < rlen; index++) {
+            const [vi, vj] = this.otherBoundary(ti, tj + index);
+            if (this.kmap_table[vi][vj] === 0) {
+              break;
+            }
+          }
+
           visited[ti][tj] = true;
           x++;
 
           if (2 ** pow === x) {
             pow++;
-            ax = ti;
+            ai = ti;
             xx = x;
           }
           [ti, tj] = this.otherBoundary(ti - 1, tj);
         }
         x = xx;
 
-        const rlen = xx;
-
-        // DOWN
-        pow = 1;
-        x = xx = 1;
-        [ti, tj] = this.otherBoundary(ax, ay - 1);
-        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
-          for (let index = 1; index < rlen; index++) {
-            const [vi, vj] = this.otherBoundary(ti + index, tj);
-            if (this.kmap_table[vi][vj] === 0) {
-              break;
-            }
-          }
-
-          visited[ti][tj] = true;
-          x++;
-
-          if (2 ** pow === x) {
-            pow++;
-            xx = x;
-          }
-          [ti, tj] = this.otherBoundary(ti, tj - 1);
-        }
-        x = xx;
-
-        // UP
-        [ti, tj] = this.otherBoundary(ax, ay + 1);
-        while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
-          for (let index = 1; index < rlen; index++) {
-            const [vi, vj] = this.otherBoundary(ti + index, tj);
-            if (this.kmap_table[vi][vj] === 0) {
-              break;
-            }
-          }
-
-          visited[ti][tj] = true;
-          x++;
-
-          if (2 ** pow === x) {
-            pow++;
-            ay = tj;
-            xx = x;
-          }
-          [ti, tj] = this.otherBoundary(ti, tj + 1);
-        }
-        x = xx;
-
         // PUSH ALLS QUAD
         for (let index = 0; index < xx; index++) {
           for (let jndex = 0; jndex < rlen; jndex++) {
-            [ti, tj] = this.otherBoundary(ax + index, ay + jndex);
+            [ti, tj] = this.otherBoundary(ai + index, aj + jndex);
             quad.push({ row: ti, col: tj });
             part_of_quad[ti][tj] = quads.length;
           }
@@ -251,17 +250,63 @@ export default class KarnaughMap {
     return quads;
   }
 
-  private otherBoundary(i: number, j: number): [number, number] {
-    if (i === -1) {
-      i = this.row_gray_code.length - 1;
-    } else if (i === this.row_gray_code.length) {
-      i = 0;
-    } else if (j === -1) {
-      j = this.col_gray_code.length - 1;
-    } else if (j === this.col_gray_code.length) {
-      j = 0;
+  private otherBoundary(row: number, col: number): [number, number] {
+    if (row === -1) {
+      row = this.row_gray_code.length - 1;
+    } else if (row === this.row_gray_code.length) {
+      row = 0;
+    }
+    if (col === -1) {
+      col = this.col_gray_code.length - 1;
+    } else if (col === this.col_gray_code.length) {
+      col = 0;
     }
 
-    return [i, j];
+    return [row, col];
+  }
+
+  public printKmap(): void {
+    console.log(
+      "    " + this.col_gray_code.map((gc) => gc.binary.padStart(2)).join("  ")
+    );
+    console.log("   " + "-".repeat(this.col_gray_code.length * 3 + 1));
+    for (let i = 0; i < this.kmap_table.length; i++) {
+      let row = this.row_gray_code[i].binary.padStart(2) + " |";
+      for (let j = 0; j < this.kmap_table[i].length; j++) {
+        const value = this.kmap_table[i][j];
+        row += " " + (value === -1 ? "X" : value) + " ";
+      }
+      console.log(row);
+    }
+  }
+
+  public printQuad(quad: Cell[]): void {
+    const table = Array.from({ length: this.row_gray_code.length }, () =>
+      Array(this.col_gray_code.length).fill(0)
+    );
+    for (const cell of quad) {
+      if (
+        cell.row < 0 ||
+        cell.row >= this.row_gray_code.length ||
+        cell.col < 0 ||
+        cell.col >= this.col_gray_code.length
+      ) {
+        console.log(cell);
+        throw new Error("Cell out of bounds");
+      }
+      table[cell.row][cell.col] = 1;
+    }
+    console.log(
+      "    " + this.col_gray_code.map((gc) => gc.binary.padStart(2)).join("  ")
+    );
+    console.log("   " + "-".repeat(this.col_gray_code.length * 3 + 1));
+    for (let i = 0; i < table.length; i++) {
+      let row = this.row_gray_code[i].binary.padStart(2) + " |";
+      for (let j = 0; j < table[i].length; j++) {
+        const value = table[i][j];
+        row += " " + value + " ";
+      }
+      console.log(row);
+    }
   }
 }
