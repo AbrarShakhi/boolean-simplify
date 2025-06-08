@@ -8,12 +8,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .title {
-  text-align: center;
-  margin-bottom: 2rem;
+  margin: 0;
   color: var(--text-color);
 }
 
@@ -34,8 +33,7 @@
 .penContainer {
   display: flex;
   gap: 1rem;
-  justify-content: center;
-  margin-bottom: 2rem;
+  margin: 0;
 }
 
 .penButton {
@@ -154,4 +152,67 @@
 :root[data-theme="dark"] .outputX {
   background-color: #404040 !important;
   color: #a0a0a0 !important;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.fillButtonsWrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.fillButtons {
+  display: inline-flex;
+  gap: 0.5rem;
+  padding-right: 1rem;
+}
+
+.fillButtons::-webkit-scrollbar {
+  height: 6px;
+}
+
+.fillButtons::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 3px;
+}
+
+.fillButtons::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.fillButton {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.fillButton:hover {
+  background-color: var(--hover-color) !important;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .penContainer {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }
