@@ -1,27 +1,15 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-color: #ffffff;
+  --text-color: #111827;
+  --text-color-secondary: #4b5563;
+  --border-color: #e5e7eb;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+[data-theme='dark'] {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --text-color-secondary: #9ca3af;
+  --border-color: #374151;
 }
 
 * {
@@ -30,9 +18,34 @@ body {
   margin: 0;
 }
 
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 a {
   color: inherit;
   text-decoration: none;
+}
+
+main {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: calc(100vh - 64px - 60px); /* viewport height minus nav and footer */
+}
+
+footer {
+  background-color: var(--bg-color);
+  color: var(--text-color-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem;
+  text-align: center;
 }
 
 @media (prefers-color-scheme: dark) {
