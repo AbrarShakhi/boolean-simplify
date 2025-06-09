@@ -1,15 +1,25 @@
 :root {
   --bg-color: #ffffff;
-  --text-color: #111827;
+  --bg-secondary: #f5f5f5;
+  --text-color: #333333;
   --text-color-secondary: #4b5563;
-  --border-color: #e5e7eb;
+  --border-color: #e0e0e0;
+  --hover-color: #f0f0f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --primary-color: #2196f3;
+  --primary-color-alpha: rgba(33, 150, 243, 0.2);
 }
 
 [data-theme='dark'] {
   --bg-color: #1a1a1a;
-  --text-color: #ffffff;
+  --bg-secondary: #2d2d2d;
+  --text-color: #e0e0e0;
   --text-color-secondary: #9ca3af;
-  --border-color: #374151;
+  --border-color: #404040;
+  --hover-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --primary-color: #64b5f6;
+  --primary-color-alpha: rgba(100, 181, 246, 0.2);
 }
 
 * {
@@ -52,4 +62,38 @@ footer {
   html {
     color-scheme: dark;
   }
+}
+
+/* Light theme output styles */
+.outputOne {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.outputZero {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.outputX {
+  background-color: #e0e0e0 !important;
+  color: #666666 !important;
+}
+
+/* Dark theme output styles */
+[data-theme="dark"] .outputOne {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .outputZero {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid #404040 !important;
+}
+
+[data-theme="dark"] .outputX {
+  background-color: #404040 !important;
+  color: #a0a0a0 !important;
 }
