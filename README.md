@@ -1,25 +1,61 @@
-# Boolean Equation Generator
+# Boolean Simplify
+
+### Boolean Equation Generator
 
 A web application built with Next.js for converting truth tables into boolean equations. It uses Karnaugh Map to generate the equation.
+
+## Deployment Link
+
+<a href="https://boolean-simplify.vercel.app/"><img src="public/logo.svg" alt="Boolean Simplify Logo" width="25"/></a> [Click here to visit the deployed application](https://boolean-simplify.vercel.app/)
+
+[![GitHub](https://img.shields.io/github/stars/abrarshakhi/boolean-simplify?style=social)](https://github.com/abrarshakhi/boolean-simplify)
+[![GitHub issues](https://img.shields.io/github/issues/abrarshakhi/boolean-simplify)](https://github.com/abrarshakhi/boolean-simplify/issues)
+[![GitHub license](https://img.shields.io/github/license/abrarshakhi/boolean-simplify)](https://github.com/abrarshakhi/boolean-simplify/blob/main/LICENSE)
+[![Vercel](https://vercelbadge.vercel.app/api/abrartwo/boolean-simplify)](https://boolean-simplify.vercel.app/)
+[![GitHub contributors](https://img.shields.io/github/contributors/abrarshakhi/boolean-simplify)](https://github.com/abrarshakhi/boolean-simplify/graphs/contributors)
+
+## Demo
+
+Here's a quick demonstration of how Boolean Simplify works:
+
+![demo](public/demo.gif)
 
 ## Features
 
 - Convert truth tables to boolean equations using Karnaugh Map method
-- Support for multiple input variables
+- Support for multiple input and output variables
 - Real-time equation generation
-- Copy results to clipboard
+- Dark and light mode themes
+- User-friendly interface
 - Responsive design for all devices
 
-## Installation
-
-### Prerequisites
+## Built With
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
+## Getting Started
+
+### Prerequisites
 
 - Node.js (version 18 or newer)
 - Yarn
 - TypeScript
+
+### Quick Example
+
+1. Input your truth table:
+   - For a 2-input, 1-output system:
+   ```
+   A B | Y
+   0 0 | 1
+   0 1 | 0
+   1 0 | 1
+   1 1 | 1
+   ```
+2. Click "Generate" to get the simplified boolean equation
+3. The result will be: `Y = A + B'`
 
 ### Setup Instructions
 
