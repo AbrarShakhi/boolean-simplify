@@ -1,5 +1,5 @@
 import TruthTable from "@/engine/truthTable";
-import {} from "js-sdsl";
+import { HashSet } from "js-sdsl";
 
 type GrayCode = {
   binary: string;
@@ -13,8 +13,6 @@ type Cell = {
 
 export default class KarnaughMap {
   private truth_table: TruthTable;
-  private num_of_km_rows: number;
-  private num_of_km_cols: number;
 
   private row_gray_code: GrayCode[];
   private col_gray_code: GrayCode[];
@@ -22,18 +20,18 @@ export default class KarnaughMap {
 
   constructor(truth_table: TruthTable) {
     this.truth_table = truth_table;
-
+    let num_of_km_rows = 0;
+    let num_of_km_cols = 0;
     if (this.truth_table.getNumOfInput() % 2 === 0) {
-      this.num_of_km_rows = this.num_of_km_cols =
-        this.truth_table.getNumOfInput() / 2;
+      num_of_km_rows = num_of_km_cols = this.truth_table.getNumOfInput() / 2;
     } else {
-      this.num_of_km_rows = Math.floor(this.truth_table.getNumOfInput() / 2);
-      this.num_of_km_cols = Math.ceil(this.truth_table.getNumOfInput() / 2);
+      num_of_km_rows = Math.floor(this.truth_table.getNumOfInput() / 2);
+      num_of_km_cols = Math.ceil(this.truth_table.getNumOfInput() / 2);
     }
 
     // TODO: If input pins is 1 it fails to generate.
-    this.row_gray_code = this.generateGrayCode(this.num_of_km_rows);
-    this.col_gray_code = this.generateGrayCode(this.num_of_km_cols);
+    this.row_gray_code = this.generateGrayCode(num_of_km_rows);
+    this.col_gray_code = this.generateGrayCode(num_of_km_cols);
 
     this.kmap_table = Array.from({ length: this.row_gray_code.length }, () =>
       Array(this.col_gray_code.length).fill("0")
@@ -163,6 +161,7 @@ export default class KarnaughMap {
         let [ai, aj] = [i, j];
         let [x, xx] = [1, 1];
         let [ti, tj] = this.otherBoundary(ai, aj + 1);
+        visited[ai][aj] = true;
         while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
           visited[ti][tj] = true;
           x++;
@@ -251,15 +250,17 @@ export default class KarnaughMap {
   }
 
   private otherBoundary(row: number, col: number): [number, number] {
-    if (row === -1) {
-      row = this.row_gray_code.length - 1;
-    } else if (row === this.row_gray_code.length) {
-      row = 0;
+    if (row < 0) {
+      const nr = Math.abs(row) % this.row_gray_code.length;
+      row = this.row_gray_code.length - nr;
+    } else if (row >= this.row_gray_code.length) {
+      row = row % this.row_gray_code.length;
     }
-    if (col === -1) {
-      col = this.col_gray_code.length - 1;
+    if (col < 0) {
+      const nc = Math.abs(col) % this.col_gray_code.length;
+      col = this.col_gray_code.length - nc;
     } else if (col === this.col_gray_code.length) {
-      col = 0;
+      col = col % this.col_gray_code.length;
     }
 
     return [row, col];
