@@ -310,4 +310,69 @@ export default class KarnaughMap {
       console.log(row);
     }
   }
+
+  public EquationSOP(quads: Cell[][]): string[][] {
+    const sop: string[][] = [];
+    for (const quad of quads) {
+      const row_set = new HashSet<number>();
+      const col_set = new HashSet<number>();
+
+      for (const cell of quad) {
+        if (row_set.find(cell.row) !== row_set.end()) {
+          row_set.insert(cell.row);
+        }
+        if (col_set.find(cell.col) !== col_set.end()) {
+          col_set.insert(cell.col);
+        }
+      }
+      const products: string[] = [];
+
+      const any_row = row_set.back();
+      if (any_row) {
+        const gray_code_len = this.row_gray_code[0].binary.length;
+        for (let i = 0; i < gray_code_len; i++) {
+          const bit = this.row_gray_code[any_row].binary[i];
+          let include = true;
+          for (const r of row_set) {
+            if (bit !== this.row_gray_code[r].binary[i]) {
+              include = false;
+              break;
+            }
+          }
+          if (include) {
+            if (bit === "0") {
+              products.push(`!i${i}`);
+            } else {
+              products.push(`i${i}`);
+            }
+          }
+        }
+      }
+
+      const any_col = col_set.back();
+      if (any_col) {
+        const gray_code_len = this.col_gray_code[0].binary.length;
+        for (let i = 0; i < gray_code_len; i++) {
+          const bit = this.col_gray_code[any_col].binary[i];
+          let include = true;
+          for (const c of col_set) {
+            if (bit !== this.col_gray_code[c].binary[i]) {
+              include = false;
+              break;
+            }
+          }
+          if (include) {
+            if (bit === "0") {
+              products.push(`!i${i + this.row_gray_code.length}`);
+            } else {
+              products.push(`i${i + this.row_gray_code.length}`);
+            }
+          }
+        }
+      }
+
+      sop.push(products);
+    }
+    return sop;
+  }
 }
