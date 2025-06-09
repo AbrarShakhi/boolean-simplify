@@ -13,6 +13,8 @@ type Cell = {
 
 export default class KarnaughMap {
   private truth_table: TruthTable;
+  private num_of_variables_in_rows: number;
+  private num_of_variables_in_cols: number;
 
   private row_gray_code: GrayCode[];
   private col_gray_code: GrayCode[];
@@ -20,18 +22,21 @@ export default class KarnaughMap {
 
   constructor(truth_table: TruthTable) {
     this.truth_table = truth_table;
-    let num_of_km_rows = 0;
-    let num_of_km_cols = 0;
     if (this.truth_table.getNumOfInput() % 2 === 0) {
-      num_of_km_rows = num_of_km_cols = this.truth_table.getNumOfInput() / 2;
+      this.num_of_variables_in_rows = this.num_of_variables_in_cols =
+        this.truth_table.getNumOfInput() / 2;
     } else {
-      num_of_km_rows = Math.floor(this.truth_table.getNumOfInput() / 2);
-      num_of_km_cols = Math.ceil(this.truth_table.getNumOfInput() / 2);
+      this.num_of_variables_in_rows = Math.floor(
+        this.truth_table.getNumOfInput() / 2
+      );
+      this.num_of_variables_in_cols = Math.ceil(
+        this.truth_table.getNumOfInput() / 2
+      );
     }
 
     // TODO: If input pins is 1 it fails to generate.
-    this.row_gray_code = this.generateGrayCode(num_of_km_rows);
-    this.col_gray_code = this.generateGrayCode(num_of_km_cols);
+    this.row_gray_code = this.generateGrayCode(this.num_of_variables_in_rows);
+    this.col_gray_code = this.generateGrayCode(this.num_of_variables_in_cols);
 
     this.kmap_table = Array.from({ length: this.row_gray_code.length }, () =>
       Array(this.col_gray_code.length).fill("0")
@@ -328,7 +333,7 @@ export default class KarnaughMap {
       const products: string[] = [];
 
       const any_row = row_set.back();
-      if (any_row) {
+      if (any_row !== undefined) {
         const gray_code_len = this.row_gray_code[0].binary.length;
         for (let i = 0; i < gray_code_len; i++) {
           const bit = this.row_gray_code[any_row].binary[i];
@@ -350,7 +355,7 @@ export default class KarnaughMap {
       }
 
       const any_col = col_set.back();
-      if (any_col) {
+      if (any_col !== undefined) {
         const gray_code_len = this.col_gray_code[0].binary.length;
         for (let i = 0; i < gray_code_len; i++) {
           const bit = this.col_gray_code[any_col].binary[i];
@@ -363,9 +368,9 @@ export default class KarnaughMap {
           }
           if (include) {
             if (bit === "0") {
-              products.push(`!i${i + this.row_gray_code.length}`);
+              products.push(`!i${i + this.num_of_variables_in_rows}`);
             } else {
-              products.push(`i${i + this.row_gray_code.length}`);
+              products.push(`i${i + this.num_of_variables_in_rows}`);
             }
           }
         }
