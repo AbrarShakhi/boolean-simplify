@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
-import { Button } from '@/components/Button/Button';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
+import { Button } from "@/components/Button/Button";
 
 export default function Home() {
   const router = useRouter();
@@ -11,9 +11,9 @@ export default function Home() {
   const [outputs, setOutputs] = useState<number>(1);
 
   const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === '') {
+    if (e.target.value === "") {
       setInputs(2);
-      return
+      return;
     }
     const valstr = e.target.value.trim();
     const value = parseInt(valstr[valstr.length - 1]);
@@ -25,9 +25,9 @@ export default function Home() {
   };
 
   const handleOutputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === '') {
+    if (e.target.value === "") {
       setOutputs(1);
-      return
+      return;
     }
     const valstr = e.target.value.trim();
     const value = parseInt(valstr[valstr.length - 1]);
@@ -45,7 +45,6 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Karnaugh Map Solver</h1>
-      
       <div className={styles.configSection}>
         <div className={styles.inputGroup}>
           <label htmlFor="inputs">Number of Inputs:</label>

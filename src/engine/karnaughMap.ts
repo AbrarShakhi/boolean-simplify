@@ -1,5 +1,5 @@
 import TruthTable from "@/engine/truthTable";
-import {} from "js-sdsl";
+import { HashSet } from "js-sdsl";
 
 type GrayCode = {
   binary: string;
@@ -13,8 +13,8 @@ type Cell = {
 
 export default class KarnaughMap {
   private truth_table: TruthTable;
-  private num_of_km_rows: number;
-  private num_of_km_cols: number;
+  private num_of_variables_in_rows: number;
+  private num_of_variables_in_cols: number;
 
   private row_gray_code: GrayCode[];
   private col_gray_code: GrayCode[];
@@ -22,18 +22,21 @@ export default class KarnaughMap {
 
   constructor(truth_table: TruthTable) {
     this.truth_table = truth_table;
-
     if (this.truth_table.getNumOfInput() % 2 === 0) {
-      this.num_of_km_rows = this.num_of_km_cols =
+      this.num_of_variables_in_rows = this.num_of_variables_in_cols =
         this.truth_table.getNumOfInput() / 2;
     } else {
-      this.num_of_km_rows = Math.floor(this.truth_table.getNumOfInput() / 2);
-      this.num_of_km_cols = Math.ceil(this.truth_table.getNumOfInput() / 2);
+      this.num_of_variables_in_rows = Math.floor(
+        this.truth_table.getNumOfInput() / 2
+      );
+      this.num_of_variables_in_cols = Math.ceil(
+        this.truth_table.getNumOfInput() / 2
+      );
     }
 
     // TODO: If input pins is 1 it fails to generate.
-    this.row_gray_code = this.generateGrayCode(this.num_of_km_rows);
-    this.col_gray_code = this.generateGrayCode(this.num_of_km_cols);
+    this.row_gray_code = this.generateGrayCode(this.num_of_variables_in_rows);
+    this.col_gray_code = this.generateGrayCode(this.num_of_variables_in_cols);
 
     this.kmap_table = Array.from({ length: this.row_gray_code.length }, () =>
       Array(this.col_gray_code.length).fill("0")
@@ -163,6 +166,7 @@ export default class KarnaughMap {
         let [ai, aj] = [i, j];
         let [x, xx] = [1, 1];
         let [ti, tj] = this.otherBoundary(ai, aj + 1);
+        visited[ai][aj] = true;
         while (this.kmap_table[ti][tj] !== 0 && !visited[ti][tj]) {
           visited[ti][tj] = true;
           x++;
@@ -251,15 +255,17 @@ export default class KarnaughMap {
   }
 
   private otherBoundary(row: number, col: number): [number, number] {
-    if (row === -1) {
-      row = this.row_gray_code.length - 1;
-    } else if (row === this.row_gray_code.length) {
-      row = 0;
+    if (row < 0) {
+      const nr = Math.abs(row) % this.row_gray_code.length;
+      row = this.row_gray_code.length - nr;
+    } else if (row >= this.row_gray_code.length) {
+      row = row % this.row_gray_code.length;
     }
-    if (col === -1) {
-      col = this.col_gray_code.length - 1;
+    if (col < 0) {
+      const nc = Math.abs(col) % this.col_gray_code.length;
+      col = this.col_gray_code.length - nc;
     } else if (col === this.col_gray_code.length) {
-      col = 0;
+      col = col % this.col_gray_code.length;
     }
 
     return [row, col];
@@ -308,5 +314,70 @@ export default class KarnaughMap {
       }
       console.log(row);
     }
+  }
+
+  public EquationSOP(quads: Cell[][]): string[][] {
+    const sop: string[][] = [];
+    for (const quad of quads) {
+      const row_set = new HashSet<number>();
+      const col_set = new HashSet<number>();
+
+      for (const cell of quad) {
+        if (row_set.find(cell.row) !== row_set.end()) {
+          row_set.insert(cell.row);
+        }
+        if (col_set.find(cell.col) !== col_set.end()) {
+          col_set.insert(cell.col);
+        }
+      }
+      const products: string[] = [];
+
+      const any_row = row_set.back();
+      if (any_row !== undefined) {
+        const gray_code_len = this.row_gray_code[0].binary.length;
+        for (let i = 0; i < gray_code_len; i++) {
+          const bit = this.row_gray_code[any_row].binary[i];
+          let include = true;
+          for (const r of row_set) {
+            if (bit !== this.row_gray_code[r].binary[i]) {
+              include = false;
+              break;
+            }
+          }
+          if (include) {
+            if (bit === "0") {
+              products.push(`!i${i}`);
+            } else {
+              products.push(`i${i}`);
+            }
+          }
+        }
+      }
+
+      const any_col = col_set.back();
+      if (any_col !== undefined) {
+        const gray_code_len = this.col_gray_code[0].binary.length;
+        for (let i = 0; i < gray_code_len; i++) {
+          const bit = this.col_gray_code[any_col].binary[i];
+          let include = true;
+          for (const c of col_set) {
+            if (bit !== this.col_gray_code[c].binary[i]) {
+              include = false;
+              break;
+            }
+          }
+          if (include) {
+            if (bit === "0") {
+              products.push(`!i${i + this.num_of_variables_in_rows}`);
+            } else {
+              products.push(`i${i + this.num_of_variables_in_rows}`);
+            }
+          }
+        }
+      }
+
+      sop.push(products);
+    }
+    return sop;
   }
 }
