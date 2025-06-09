@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 import TruthTable from "../../engine/truthTable";
-// import KarnaughMap from "../../engine/karnaughMap";
+import KarnaughMap from "../../engine/karnaughMap";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/Button/Button";
 
@@ -31,6 +31,7 @@ export default function TruthTablePage() {
   const [inputArray, setInputArray] = useState<number[][]>([]);
   const [outputArray, setOutputArray] = useState<number[][]>([]);
   const [selectedPen, setSelectedPen] = useState<PenType>(1);
+  const [equations, setEquations] = useState<string[]>([]);
 
   useEffect(() => {
     const tr = new TruthTable(numInputs, numOutputs);
@@ -78,9 +79,6 @@ export default function TruthTablePage() {
         : styles.outputX
     }`;
   };
-
-  if (truthTable) {
-  }
 
   return (
     <div>
@@ -160,9 +158,42 @@ export default function TruthTablePage() {
             </tbody>
           </table>
         </div>
+        <div className={styles.buttonSection}>
+          <Button
+            onClick={() => {
+              if (!truthTable) return;
+              const kmap = new KarnaughMap(truthTable);
+              const allEquations: string[] = [];
+              
+              for (let output_pin_index = 0; output_pin_index < numOutputs; output_pin_index++) {
+                kmap.applyOutputToKmap(output_pin_index);
+                const quads = kmap.FindQuads();
+                const boolean_sop_array = kmap.EquationSOP(quads);
+                const boolean_sop_equation = kmap.sopToString(boolean_sop_array);
+                allEquations.push(boolean_sop_equation);
+              }
+              setEquations(allEquations);
+            }}
+            className={styles.actionButton}
+          >
+            Generate equation
+          </Button>
+        </div>
       </div>
-      <div>bottons</div>
-      <div>kmap not impilments</div>
+      <div className={styles.equationSection}>
+        {equations.length > 0 ? (
+          <div>
+            <h2>Simplified Boolean Equations:</h2>
+            {equations.map((equation, index) => (
+              <div key={index} className={styles.equation}>
+                <span>o{index + 1}</span> = {equation}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div></div>
+        )}
+      </div>
     </div>
   );
 }

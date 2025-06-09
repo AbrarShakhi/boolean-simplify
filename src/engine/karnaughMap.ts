@@ -11,6 +11,12 @@ type Cell = {
   col: number;
 };
 
+/**
+ * Represents a Karnaugh Map (K-map) for boolean function minimization.
+ * A Karnaugh Map is a visual method used to simplify boolean algebra expressions.
+ * It provides a systematic way to find the minimum sum of products (SOP) form
+ * of a boolean function.
+ */
 export default class KarnaughMap {
   private truth_table: TruthTable;
   private num_of_variables_in_rows: number;
@@ -43,6 +49,12 @@ export default class KarnaughMap {
     );
   }
 
+  /**
+   * Generates a Gray code sequence for a given number of variables.
+   * Gray code is a binary numeral system where two successive values differ in only one bit.
+   * @param num_of_variables - Number of variables to generate Gray code for
+   * @returns Array of Gray code objects containing binary representation and decimal value
+   */
   private generateGrayCode(num_of_variables: number): GrayCode[] {
     if (num_of_variables <= 0) {
       return [];
@@ -81,6 +93,12 @@ export default class KarnaughMap {
     return gray_code;
   }
 
+  /**
+   * Converts a decimal number to its binary string representation.
+   * @param decimal - The decimal number to convert
+   * @returns Binary string representation
+   * @throws Error if decimal is negative
+   */
   public decimal_to_binary(decimal: number): string {
     if (decimal < 0) {
       throw new Error("Decimal value must be non-negative.");
@@ -93,6 +111,12 @@ export default class KarnaughMap {
     return binary;
   }
 
+  /**
+   * Converts a binary string to its decimal number representation.
+   * @param binary - The binary string to convert
+   * @returns Decimal number representation
+   * @throws Error if binary string contains non-binary characters
+   */
   public binary_to_decimal(binary: string): number {
     if (!/^[01]+$/.test(binary)) {
       throw new Error("Binary value must consist of only 0s and 1s.");
@@ -116,6 +140,13 @@ export default class KarnaughMap {
     return gray_code;
   }
 
+  /**
+   * Applies the output values from the truth table to the Karnaugh Map.
+   * Maps each output value to its corresponding position in the K-map based on
+   * the Gray code ordering of rows and columns.
+   * @param output_pin_index - Index of the output pin in the truth table
+   * @throws Error if output pin index is invalid
+   */
   public applyOutputToKmap(output_pin_index: number) {
     if (
       output_pin_index < 0 ||
@@ -142,6 +173,11 @@ export default class KarnaughMap {
     }
   }
 
+  /**
+   * Finds all possible quads (groups of 4 adjacent 1s) in the Karnaugh Map.
+   * Quads are used to identify terms that can be combined in the simplified boolean expression.
+   * @returns Array of quads, where each quad is an array of cell coordinates
+   */
   public FindQuads(): Cell[][] {
     const quads: Cell[][] = [];
 
@@ -254,6 +290,14 @@ export default class KarnaughMap {
     return quads;
   }
 
+  /**
+   * Handles boundary conditions for the Karnaugh Map by wrapping around edges.
+   * Since K-maps are considered to wrap around both horizontally and vertically,
+   * this method ensures proper indexing when accessing cells beyond the map boundaries.
+   * @param row - Row index
+   * @param col - Column index
+   * @returns Tuple of [row, col] with wrapped indices
+   */
   private otherBoundary(row: number, col: number): [number, number] {
     if (row < 0) {
       const nr = Math.abs(row) % this.row_gray_code.length;
@@ -316,6 +360,12 @@ export default class KarnaughMap {
     }
   }
 
+  /**
+   * Generates the Sum of Products (SOP) equation from the identified quads.
+   * Each quad represents a product term in the simplified boolean expression.
+   * @param quads - Array of quads identified in the K-map
+   * @returns Array of product terms, where each term is an array of literals
+   */
   public EquationSOP(quads: Cell[][]): string[][] {
     const sop: string[][] = [];
     for (const quad of quads) {
@@ -346,9 +396,9 @@ export default class KarnaughMap {
           }
           if (include) {
             if (bit === "0") {
-              products.push(`!i${i}`);
+              products.push(`i${i+ 1}'`);
             } else {
-              products.push(`i${i}`);
+              products.push(`i${i+ 1}`);
             }
           }
         }
@@ -368,9 +418,9 @@ export default class KarnaughMap {
           }
           if (include) {
             if (bit === "0") {
-              products.push(`!i${i + this.num_of_variables_in_rows}`);
+              products.push(`i${i + this.num_of_variables_in_rows + 1}'`);
             } else {
-              products.push(`i${i + this.num_of_variables_in_rows}`);
+              products.push(`i${i + this.num_of_variables_in_rows+ 1}`);
             }
           }
         }
@@ -379,5 +429,21 @@ export default class KarnaughMap {
       sop.push(products);
     }
     return sop;
+  }
+
+  /**
+   * Converts a Sum of Products (SOP) array into a formatted string representation.
+   * Each product term is joined with a dot (·) and all products are joined with a plus (+).
+   * 
+   * @param sop - Array of product terms, where each term is an array of literals
+   * @returns Formatted string representation of the SOP expression
+   * @example
+   * // Input: [["i1", "i3'"], ["i0", "i3'"]]
+   * // Output: "i1 · i3' + i0 · i3'"
+   */
+  public sopToString(sop: string[][]): string {
+    if (sop.length === 0) return "";
+    
+    return sop.map(products => products.join(" · ")).join(" + ");
   }
 }
