@@ -2,7 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
-import TruthTable from "@/engine/truthTable";
+import TruthTable from "../../engine/truthTable";
+// import KarnaughMap from "../../engine/karnaughMap";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/Button/Button";
 
@@ -41,27 +42,23 @@ export default function TruthTablePage() {
   const handleOutputClick = (rowIndex: number, outputIndex: number) => {
     if (!truthTable) return;
 
-    // Update the output array immediately
     const newOutputArray = [...outputArray];
     newOutputArray[rowIndex][outputIndex] = selectedPen;
     setOutputArray(newOutputArray);
 
-    // Update the truth table
     truthTable.setOutput(outputIndex, rowIndex, selectedPen);
   };
 
   const handleFillOutput = (outputIndex: number) => {
     if (!truthTable) return;
 
-    // Update all rows for the selected output
-    const newOutputArray = outputArray.map(row => {
+    const newOutputArray = outputArray.map((row) => {
       const newRow = [...row];
       newRow[outputIndex] = selectedPen;
       return newRow;
     });
     setOutputArray(newOutputArray);
 
-    // Update the truth table for all rows
     for (let rowIndex = 0; rowIndex < inputArray.length; rowIndex++) {
       truthTable.setOutput(outputIndex, rowIndex, selectedPen);
     }
@@ -73,13 +70,17 @@ export default function TruthTablePage() {
   };
 
   const getOutputButtonClass = (value: number) => {
-    return `${styles.outputButton} ${value === 1
+    return `${styles.outputButton} ${
+      value === 1
         ? styles.outputOne
         : value === 0
-          ? styles.outputZero
-          : styles.outputX
-      }`;
+        ? styles.outputZero
+        : styles.outputX
+    }`;
   };
+
+  if (truthTable) {
+  }
 
   return (
     <div>
@@ -89,22 +90,25 @@ export default function TruthTablePage() {
           <div className={styles.penContainer}>
             <Button
               onClick={() => setSelectedPen(1)}
-              className={`${styles.penButton} ${selectedPen === 1 ? styles.selectedPen : ""
-                }`}
+              className={`${styles.penButton} ${
+                selectedPen === 1 ? styles.selectedPen : ""
+              }`}
             >
               1
             </Button>
             <Button
               onClick={() => setSelectedPen(0)}
-              className={`${styles.penButton} ${selectedPen === 0 ? styles.selectedPen : ""
-                }`}
+              className={`${styles.penButton} ${
+                selectedPen === 0 ? styles.selectedPen : ""
+              }`}
             >
               0
             </Button>
             <Button
               onClick={() => setSelectedPen(-1)}
-              className={`${styles.penButton} ${selectedPen === -1 ? styles.selectedPen : ""
-                }`}
+              className={`${styles.penButton} ${
+                selectedPen === -1 ? styles.selectedPen : ""
+              }`}
             >
               x
             </Button>
@@ -118,7 +122,7 @@ export default function TruthTablePage() {
                 onClick={() => handleFillOutput(i)}
                 className={styles.fillButton}
               >
-                Fill O{i + 1}
+                Fill o{i + 1}
               </Button>
             ))}
           </div>
@@ -157,12 +161,8 @@ export default function TruthTablePage() {
           </table>
         </div>
       </div>
-      <div>
-        bottons
-      </div>
-      <div>
-        kmap not impilments
-      </div>
+      <div>bottons</div>
+      <div>kmap not impilments</div>
     </div>
   );
 }
